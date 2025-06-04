@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 255, 255, 255;
+}
+
+/* Deshabilitar modo oscuro para evitar problemas con colores */
+/*
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-rgb: 0, 0, 0;
+  }
+}
+*/
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background-color: rgb(var(--background-rgb));
+}
+
+/* Asegurar que todo el texto sea visible */
+h1, h2, h3, h4, h5, h6, p, span, div, button, a {
+  color: #111827; /* equivalente a text-gray-900 */
+}
+
+/* Excepciones para botones y áreas con fondos oscuros */
+.bg-primary, [class*="bg-primary"] {
+  color: #ffffff;
+}
+
+/* Asegurar que los resultados sean visibles */
+.whitespace-pre-wrap, [dangerouslySetInnerHTML] {
+  color: #111827;
+}

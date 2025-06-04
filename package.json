@@ -1,0 +1,29 @@
+{
+  "name": "plataforma-y",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "web",
+    "api",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Plataforma Y - Sistema de reescritura y generación de contenidos con OpenAI Responses API, n8n y fal.ai",
+  "devDependencies": {
+    "turbo": "^1.10.0",
+    "prettier": "^2.8.8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "packageManager": "npm@9.0.0"
+}
