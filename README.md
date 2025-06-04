@@ -30,8 +30,8 @@ plataforma-y/
 
 1. **Clonar el repositorio:**
    ```
-   git clone <repo-url>
-   cd plataforma-y
+   git clone https://github.com/Pac00n/plataforma-contenidos.git
+   cd plataforma-contenidos
    ```
 
 2. **Instalar dependencias:**
@@ -50,12 +50,29 @@ plataforma-y/
    ```
    npm run dev
    ```
+   
+   Esto iniciará:
+   - Frontend en http://localhost:3000
+   - API en http://localhost:3001
+
+5. **Verificar la instalación:**
+   - Frontend: `curl -I http://localhost:3000` debe devolver código 200
+   - API: `curl -I http://localhost:3001/api/health` debe devolver código 200
 
 ## Funcionalidades
 
 - **Reescritura de contenido:** Ingrese una URL y obtenga versiones reescritas para diferentes formatos.
 - **Generación de imágenes:** Automáticamente genera imágenes relevantes con fal.ai.
 - **Múltiples formatos:** Artículo HTML, publicación de LinkedIn, hilos de Twitter y guiones para Reels de Instagram.
+
+## Cambios Recientes
+
+### Actualización 04/06/2025
+
+- Se ajustó el archivo `turbo.json` para usar la clave correcta `pipeline` en lugar de `tasks`, lo que permite que Turborepo reconozca correctamente la sección de tareas.
+- El script de desarrollo de Next.js se cambió a `next dev -p 3000` para no colisionar con la API que ocupa el puerto 3001.
+- Se implementó la integración real con OpenAI, fal.ai y n8n MCP Server, reemplazando los datos de prueba.
+- Se mejoró el manejo de errores y la estructura del código en todos los servicios.
 
 ## Roadmap
 
