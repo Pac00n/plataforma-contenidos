@@ -11,10 +11,14 @@ const openai = new OpenAI({
  */
 export interface GenerationResult {
   article_html: string;
+  article_text?: string;
   image_prompt: string;
+  image_url?: string; // URL de la imagen generada
   linkedin_post: string;
-  twitter_thread: string[];
-  instagram_reel_script: {
+  twitter_post?: string;
+  twitter_thread?: string[];
+  instagram_caption?: string;
+  instagram_reel_script?: {
     hook: string;
     slides: {
       subtitle: string;

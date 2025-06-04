@@ -14,31 +14,9 @@ export default function Home() {
     setIsLoading(true);
     
     try {
-      console.log('Enviando solicitud al backend...');
+      console.log('Enviando solicitud al backend...', url);
       
-      // Usar datos de prueba para verificar si el frontend muestra correctamente la información
-      const mockData = {
-        article_html: "<article><h2>Artículo de prueba</h2><p>Este es un artículo de prueba generado localmente.</p></article>",
-        image_prompt: "A dramatic editorial photo showing test content",
-        linkedin_post: "Publicación de LinkedIn de prueba",
-        twitter_thread: ["Tweet 1 de prueba", "Tweet 2 de prueba", "Tweet 3 de prueba"],
-        instagram_reel_script: {
-          hook: "¿Sabías que esto es una prueba?",
-          slides: [
-            { subtitle: "Introducción de prueba", visual: "Imagen de prueba", voiceover: "Voz en off de prueba" },
-            { subtitle: "Punto clave de prueba", visual: "Gráfico de prueba", voiceover: "Datos de prueba" }
-          ]
-        }
-      };
-      
-      // Simulamos una llamada al backend, pero usamos datos locales para verificar
-      console.log('Usando datos de prueba para verificar la interfaz...');
-      setTimeout(() => {
-        setResult(mockData);
-        setIsLoading(false);
-      }, 1500);
-      
-      /* Código real comentado para depuración
+      // Conexión real al backend
       const response = await fetch('http://localhost:3001/api/rewrite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -46,11 +24,15 @@ export default function Home() {
         body: JSON.stringify({ url })
       });
       
-      if (!response.ok) throw new Error('Error al procesar la solicitud');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al procesar la solicitud');
+      }
       
       const data = await response.json();
-      setResult(data);
-      */
+      console.log('Respuesta del backend recibida:', data);
+      setResult(data.generatedContent || data); // Compatibilidad con diferentes estructuras de respuesta
+      setIsLoading(false);
     } catch (error) {
       console.error('Error:', error);
       setIsLoading(false);
@@ -60,25 +42,34 @@ export default function Home() {
   const renderContent = () => {
     if (!result) return null;
 
+    // Log para depuración
+    console.log('Renderizando contenido con datos:', result);
+
     switch(activeTab) {
       case 'article':
         return <div dangerouslySetInnerHTML={{ __html: result.article_html }} />;
       case 'linkedin':
         return <div className="whitespace-pre-wrap">{result.linkedin_post}</div>;
       case 'twitter':
-        return (
+        // Manejar tanto twitter_thread (array) como twitter_post (string)
+        return result.twitter_thread ? (
           <div className="space-y-4">
-            {result.twitter_thread.map((tweet: string, i: number) => (
+            {Array.isArray(result.twitter_thread) ? result.twitter_thread.map((tweet: string, i: number) => (
               <div key={i} className="p-4 border rounded-lg">{tweet}</div>
-            ))}
+            )) : <div className="p-4 border rounded-lg">{result.twitter_thread}</div>}
           </div>
+        ) : result.twitter_post ? (
+          <div className="p-4 border rounded-lg">{result.twitter_post}</div>
+        ) : (
+          <div className="p-4 border rounded-lg text-gray-500">No hay contenido disponible para Twitter</div>
         );
       case 'instagram':
-        return (
+        // Manejar tanto instagram_reel_script (complejo) como instagram_caption (simple)
+        return result.instagram_reel_script ? (
           <div className="space-y-4">
             <h3 className="font-bold">Hook: {result.instagram_reel_script.hook}</h3>
             <div className="space-y-2">
-              {result.instagram_reel_script.slides.map((slide: any, i: number) => (
+              {result.instagram_reel_script.slides && result.instagram_reel_script.slides.map((slide: any, i: number) => (
                 <div key={i} className="p-4 border rounded-lg">
                   <p className="font-bold">{slide.subtitle}</p>
                   <p>{slide.visual}</p>
@@ -87,6 +78,10 @@ export default function Home() {
               ))}
             </div>
           </div>
+        ) : result.instagram_caption ? (
+          <div className="whitespace-pre-wrap p-4 border rounded-lg">{result.instagram_caption}</div>
+        ) : (
+          <div className="p-4 border rounded-lg text-gray-500">No hay contenido disponible para Instagram</div>
         );
       default:
         return null;
