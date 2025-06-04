@@ -149,10 +149,10 @@ export async function generateContent(scrapedContent: ScrapingResult): Promise<G
       model: "gpt-4o",
       messages: [
         {
-          role: "system", 
-          content: `Eres un experto en reescritura y adaptación de contenido. 
+          role: "system",
+          content: `Eres un experto en reescritura y adaptación de contenido.
                     Tu tarea es reescribir el artículo proporcionado y adaptarlo a diferentes formatos para redes sociales.
-                    Debes mantener la esencia del contenido pero hacerlo completamente original.
+                    Debes mantener la esencia del contenido pero hacerlo completamente original, ampliándolo para que el artículo en HTML sea más largo y detallado.
                     Usa un tono profesional para LinkedIn, conversacional para Twitter e impactante para Instagram.`
         },
         {
