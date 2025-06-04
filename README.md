@@ -4,11 +4,11 @@ Sistema de reescritura y generación de contenidos utilizando OpenAI Responses A
 
 ## Arquitectura
 
-| Capa                          | Tecnologías                                                       | Responsabilidad                                                                                                                                                   |
-| ----------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Frontend**                  | Next.js / React 18, TypeScript, Tailwind CSS, SWR para streaming  | UI (campo URL, progreso en tiempo real, pestañas "Artículo", "LinkedIn", "X/Twitter", "Reel IG"), manejo de sesión y subida de claves API                         |
-| **Backend**                   | Node 18 + Express                                                 | 1) Orquestar llamadas a **OpenAI Responses API** y a **fal.ai** · 2) Enviar contexto a un **servidor MCP** via la URL del **nodo *MCP Server Trigger*** de n8n    |
-| **Automatización & scraping** | n8n (self-host u On-Prem) con nodos HTTP Request ➜ Readability    | Extraer y limpiar el artículo fuente                                                                                                                              |
+| Capa                          | Tecnologías                                                      | Responsabilidad                                                                                                                                                |
+| ----------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Frontend**                  | Next.js / React 18, TypeScript, Tailwind CSS, SWR para streaming | UI (campo URL, progreso en tiempo real, pestañas "Artículo", "LinkedIn", "X/Twitter", "Reel IG"), manejo de sesión y subida de claves API                      |
+| **Backend**                   | Node 18 + Express                                                | 1) Orquestar llamadas a **OpenAI Responses API** y a **fal.ai** · 2) Enviar contexto a un **servidor MCP** via la URL del **nodo _MCP Server Trigger_** de n8n |
+| **Automatización & scraping** | n8n (self-host u On-Prem) con nodos HTTP Request ➜ Readability   | Extraer y limpiar el artículo fuente                                                                                                                           |
 
 ## Estructura del Proyecto
 
@@ -29,17 +29,20 @@ plataforma-y/
 ## Configuración del Entorno
 
 1. **Clonar el repositorio:**
+
    ```
    git clone https://github.com/Pac00n/plataforma-contenidos.git
    cd plataforma-contenidos
    ```
 
 2. **Instalar dependencias:**
+
    ```
    npm install
    ```
 
 3. **Configurar variables de entorno:**
+
    - Copiar el archivo `.env.example` a `.env` en la carpeta `api/`
    - Añadir las claves de API necesarias:
      - `OPENAI_API_KEY`: Clave de API de OpenAI
@@ -47,11 +50,13 @@ plataforma-y/
      - `N8N_MCP_PROD_URL`: URL del servidor MCP de n8n
 
 4. **Iniciar el desarrollo:**
+
    ```
    npm run dev
    ```
-   
+
    Esto iniciará:
+
    - Frontend en http://localhost:3000
    - API en http://localhost:3001
 
@@ -73,6 +78,12 @@ plataforma-y/
 - El script de desarrollo de Next.js se cambió a `next dev -p 3000` para no colisionar con la API que ocupa el puerto 3001.
 - Se implementó la integración real con OpenAI, fal.ai y n8n MCP Server, reemplazando los datos de prueba.
 - Se mejoró el manejo de errores y la estructura del código en todos los servicios.
+
+### Actualización 05/06/2025
+
+- Migración al modelo `fal-ai/flux/dev` utilizando `fal.subscribe` para obtener las imágenes vía streaming.
+- Se añadió la función `runFal` en `falService` para centralizar las llamadas a fal.ai.
+- La interfaz ahora muestra un paso intermedio para revisar y editar los prompts de cada plataforma antes de generar el contenido.
 
 ## Roadmap
 
