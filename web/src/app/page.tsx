@@ -7,7 +7,13 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("article");
   const [result, setResult] = useState<any>(null);
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(1); // 1: URL, 2: prompts, 3: proceso, 4: resultado
+  const [progressStep, setProgressStep] = useState(0);
+  const progressStages = [
+    "Extrayendo contenido",
+    "Generando texto",
+    "Generando imagen",
+  ];
   const [prompts, setPrompts] = useState({
     article: "Genera un artículo ampliado y detallado.",
     linkedin: "Tono profesional para LinkedIn.",
@@ -23,6 +29,8 @@ export default function Home() {
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setStep(3);
+    setProgressStep(1);
 
     try {
       console.log("Enviando solicitud al backend...", url);
@@ -40,15 +48,17 @@ export default function Home() {
         throw new Error(errorData.error || "Error al procesar la solicitud");
       }
 
+      setProgressStep(2);
       const data = await response.json();
       console.log("Respuesta del backend recibida:", data);
       setResult(data.generatedContent || data); // Compatibilidad con diferentes estructuras de respuesta
+      setProgressStep(3);
       setIsLoading(false);
-      setStep(3);
+      setStep(4);
     } catch (error) {
       console.error("Error:", error);
       setIsLoading(false);
-      setStep(1);
+      setStep(2);
     }
   };
 
@@ -142,7 +152,7 @@ export default function Home() {
             <button
               type="submit"
               disabled={!url}
-              className="px-6 py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary/90"
+              className="px-6 py-3 rounded-lg bg-primary text-white font-medium transition-colors hover:bg-primary/90"
             >
               Continuar
             </button>
@@ -202,7 +212,7 @@ export default function Home() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`px-6 py-3 rounded-lg bg-primary text-white font-medium ${isLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-primary/90"}`}
+              className={`px-6 py-3 rounded-lg bg-primary text-white font-medium transition-colors ${isLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-primary/90"}`}
             >
               {isLoading ? "Procesando..." : "Generar"}
             </button>
@@ -210,37 +220,49 @@ export default function Home() {
         </form>
       )}
 
-      {isLoading && (
-        <div className="flex justify-center my-12">
+      {step === 3 && (
+        <div className="flex flex-col items-center my-12 space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <ul className="space-y-2 text-center">
+            {progressStages.map((label, idx) => (
+              <li
+                key={idx}
+                className={`transition-colors ${
+                  progressStep > idx ? "text-primary" : "text-gray-500"
+                }`}
+              >
+                {label}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
-      {step === 3 && result && (
+      {step === 4 && result && (
         <div className="mt-8">
           <div className="border-b border-gray-200 mb-4">
             <nav className="flex space-x-8">
               <button
                 onClick={() => setActiveTab("article")}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === "article" ? "border-primary text-primary" : "border-transparent text-gray-500 hover:border-gray-300"}`}
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === "article" ? "border-primary text-primary" : "border-transparent text-gray-500 hover:border-gray-300"}`}
               >
                 Artículo
               </button>
               <button
                 onClick={() => setActiveTab("linkedin")}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === "linkedin" ? "border-primary text-primary" : "border-transparent text-gray-500 hover:border-gray-300"}`}
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === "linkedin" ? "border-primary text-primary" : "border-transparent text-gray-500 hover:border-gray-300"}`}
               >
                 LinkedIn
               </button>
               <button
                 onClick={() => setActiveTab("twitter")}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === "twitter" ? "border-primary text-primary" : "border-transparent text-gray-500 hover:border-gray-300"}`}
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === "twitter" ? "border-primary text-primary" : "border-transparent text-gray-500 hover:border-gray-300"}`}
               >
                 X / Twitter
               </button>
               <button
                 onClick={() => setActiveTab("instagram")}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === "instagram" ? "border-primary text-primary" : "border-transparent text-gray-500 hover:border-gray-300"}`}
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === "instagram" ? "border-primary text-primary" : "border-transparent text-gray-500 hover:border-gray-300"}`}
               >
                 Reel IG
               </button>

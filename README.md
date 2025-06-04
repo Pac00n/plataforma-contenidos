@@ -84,6 +84,8 @@ plataforma-y/
 - Migración al modelo `fal-ai/flux/dev` utilizando `fal.subscribe` para obtener las imágenes vía streaming.
 - Se añadió la función `runFal` en `falService` para centralizar las llamadas a fal.ai.
 - La interfaz ahora muestra un paso intermedio para revisar y editar los prompts de cada plataforma antes de generar el contenido.
+- Se agregó una pantalla de progreso con indicaciones de cada etapa de procesamiento.
+- Se mejoraron los estilos de la interfaz con transiciones más suaves.
 
 ## Roadmap
 
