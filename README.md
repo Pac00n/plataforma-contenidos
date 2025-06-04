@@ -74,6 +74,11 @@ plataforma-y/
 - Se implementó la integración real con OpenAI, fal.ai y n8n MCP Server, reemplazando los datos de prueba.
 - Se mejoró el manejo de errores y la estructura del código en todos los servicios.
 
+### Actualización 05/06/2025
+
+- Migración al modelo `fal-ai/flux/dev` utilizando `fal.subscribe` para obtener las imágenes vía streaming.
+- Se añadió la función `runFal` en `falService` para centralizar las llamadas a fal.ai.
+
 ## Roadmap
 
 - [x] Sprint 0: Esqueleto inicial del proyecto
