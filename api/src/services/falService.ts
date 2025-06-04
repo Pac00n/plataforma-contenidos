@@ -26,6 +26,13 @@ export function setupFalClient() {
 }
 
 /**
+ * Ejecuta un endpoint de fal.ai utilizando el helper `fal.subscribe`
+ */
+export async function runFal(endpoint: string, input: Record<string, any>) {
+  return fal.subscribe(endpoint, { input, logs: true });
+}
+
+/**
  * Genera una imagen utilizando fal.ai basada en un prompt
  * @param prompt El prompt descriptivo para generar la imagen
  * @returns Resultado de la generación con la URL de la imagen
@@ -47,57 +54,40 @@ export async function generateImage(prompt: string): Promise<ImageGenerationResu
     }
     
     console.log(`Generando imagen con fal.ai: "${prompt}"`);
-    
+
     try {
       // Configurar el cliente si no se ha hecho antes
       setupFalClient();
-      
-      // Implementación real con fal.ai - modelo actualizado con parámetros óptimos
-      console.log('Llamando a fal.ai API con prompt:', prompt);
-      
+
       // Verificación adicional de la API key
       if (!process.env.FAL_KEY || process.env.FAL_KEY.trim() === '') {
         throw new Error('FAL_KEY no está configurada o está vacía');
       }
-      
-      // Mejorar el prompt para obtener mejores resultados
-      const enhancedPrompt = `${prompt}, high quality, detailed, professional photography, editorial style, 4k, HD`;
-      
-      // Usar modelo más estable con mejor configuración
-      const result = await fal.run('fal-ai/stable-diffusion-xl-instantaneous', {
-        input: {
-          prompt: enhancedPrompt,
-          negative_prompt: "blurry, bad quality, distorted, deformed, ugly, poor composition",
-          height: 768,
-          width: 768,
-          disable_safety_checker: false,
-          guidance_scale: 7.5,
-          seed: Math.floor(Math.random() * 1000000)
-        }
+
+      const imageSize = '1024x768';
+
+      // Llamar al modelo FLUX.1 dev con streaming
+      const { data } = await runFal('fal-ai/flux/dev', {
+        prompt,
+        image_size: imageSize
       });
-      
-      console.log('Respuesta de fal.ai recibida:', JSON.stringify(result));
-      
-      // Tipar correctamente la respuesta del modelo
-      type FalResult = {
-        images: string[],
-        // Otros campos posibles
-        seed?: number,
-        nsfw_content_detected?: boolean
-      };
-      
-      const typedResult = result as unknown as FalResult;
-      
-      if (!typedResult.images || typedResult.images.length === 0) {
+
+      console.log('Respuesta de fal.ai recibida:', JSON.stringify(data));
+
+      const images = (data as any).images as any[];
+      if (!images || images.length === 0) {
         throw new Error('No se generó ninguna imagen en la respuesta de fal.ai');
       }
-      
+
+      const url = images[0].url || images[0];
+      const [width, height] = imageSize.split('x').map(n => parseInt(n, 10));
+
       console.log('Imagen generada correctamente con fal.ai');
       return {
-        imageUrl: typedResult.images[0], // La URL ahora es directamente el string en el array
-        prompt: prompt,
-        width: 768,  // Actualizado al tamaño usado en la API
-        height: 768  // Actualizado al tamaño usado en la API
+        imageUrl: url,
+        prompt,
+        width,
+        height
       };
     } catch (falError) {
       console.warn('Error al llamar a fal.ai API, usando imagen de prueba:', falError);
