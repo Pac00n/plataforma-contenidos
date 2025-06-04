@@ -19,8 +19,9 @@
   "license": "ISC",
   "description": "Plataforma Y - Sistema de reescritura y generación de contenidos con OpenAI Responses API, n8n y fal.ai",
   "devDependencies": {
-    "turbo": "^1.10.0",
-    "prettier": "^2.8.8"
+    "eslint-config-next": "^15.3.3",
+    "prettier": "^2.8.8",
+    "turbo": "^1.10.0"
   },
   "engines": {
     "node": ">=18.0.0"
