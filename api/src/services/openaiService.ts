@@ -31,9 +31,19 @@ export interface GenerationResult {
 /**
  * Genera contenido reescrito y adaptado para diferentes plataformas
  * @param scrapedContent Contenido extraído del artículo original
+ * @param customPrompts Prompts personalizados para la generación (opcional)
  * @returns Objeto con el contenido generado para cada plataforma
  */
-export async function generateContent(scrapedContent: ScrapingResult): Promise<GenerationResult> {
+export async function generateContent(
+  scrapedContent: ScrapingResult, 
+  customPrompts?: { 
+    system?: string; 
+    user?: string; 
+    twitter?: string; 
+    linkedin?: string; 
+    instagram?: string; 
+  }
+): Promise<GenerationResult> {
   try {
     console.log('Generando contenido con OpenAI...');
     
@@ -145,25 +155,53 @@ export async function generateContent(scrapedContent: ScrapingResult): Promise<G
     };
     
     // Implementación real con OpenAI
+    const systemPrompt = customPrompts?.system || `Eres un experto en reescritura y adaptación de contenido. 
+                Tu tarea es reescribir el artículo proporcionado de forma extensa y detallada, y también adaptarlo a diferentes formatos para redes sociales.
+                Debes mantener la esencia del contenido pero hacerlo completamente original.
+                Para el artículo principal, crea un contenido extenso y bien desarrollado, con más detalles y ejemplos.`;
+                
+    const userPrompt = customPrompts?.user || `Reescribe y adapta el siguiente contenido para crear un artículo extenso y detallado:
+                Título: ${scrapedContent.title}
+                Contenido: ${scrapedContent.fullText}
+                Categoría: ${scrapedContent.metadata.category || 'General'}
+                Tags: ${scrapedContent.metadata.tags?.join(', ') || 'N/A'}
+                
+                El artículo debe ser más extenso y desarrollado que el contenido original, con más detalles y explicaciones.`;
+    
+    // Prompts específicos para cada red social
+    const twitterPrompt = customPrompts?.twitter || `Crea un hilo de Twitter sobre este contenido con un tono conversacional y dinámico. Divide el contenido en 4-6 tweets concisos pero informativos que capturen la atención.`;
+    
+    const linkedinPrompt = customPrompts?.linkedin || `Crea una publicación de LinkedIn profesional y formal sobre este contenido. Incluye una introducción atractiva, 2-3 puntos clave y una llamada a la acción profesional al final.`;
+    
+    const instagramPrompt = customPrompts?.instagram || `Diseña un guión para un reel de Instagram impactante y visual basado en este contenido. Incluye un hook atractivo, 3-5 slides con textos cortos y sugerencias de imágenes o visuales para cada slide.`;
+    
+    // Construir los mensajes con todos los prompts
+    const messages = [
+      {
+        role: "system" as const,
+        content: systemPrompt
+      },
+      {
+        role: "user" as const, 
+        content: userPrompt
+      },
+      {
+        role: "user" as const,
+        content: `Para Twitter: ${twitterPrompt}`
+      },
+      {
+        role: "user" as const,
+        content: `Para LinkedIn: ${linkedinPrompt}`
+      },
+      {
+        role: "user" as const,
+        content: `Para Instagram: ${instagramPrompt}`
+      }
+    ];
+    
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
-      messages: [
-        {
-          role: "system", 
-          content: `Eres un experto en reescritura y adaptación de contenido. 
-                    Tu tarea es reescribir el artículo proporcionado y adaptarlo a diferentes formatos para redes sociales.
-                    Debes mantener la esencia del contenido pero hacerlo completamente original.
-                    Usa un tono profesional para LinkedIn, conversacional para Twitter e impactante para Instagram.`
-        },
-        {
-          role: "user", 
-          content: `Reescribe y adapta el siguiente contenido para diferentes plataformas:
-                    Título: ${scrapedContent.title}
-                    Contenido: ${scrapedContent.fullText}
-                    Categoría: ${scrapedContent.metadata.category || 'General'}
-                    Tags: ${scrapedContent.metadata.tags?.join(', ') || 'N/A'}`
-        }
-      ],
+      messages: messages,
       functions: [functionSchema],
       function_call: { name: "generate_rewritten_content" },
       max_tokens: 4000,
